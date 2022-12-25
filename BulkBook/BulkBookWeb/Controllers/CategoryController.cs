@@ -32,9 +32,66 @@ namespace BulkBookWeb.Controllers
             {
                 _dbContext.categories.Add(category);
                 _dbContext.SaveChanges();
+                TempData["Success"] = "Item Created Successfully";
                 return RedirectToAction("Index");
             }
             return View(category);
+        }
+        public IActionResult Edit(int? Id)
+        {
+            if(Id == 0 || Id == null)
+            {
+                return NotFound();
+            }
+            var CategoryIdFromDb = _dbContext.categories.Find(Id);
+            if (CategoryIdFromDb == null)
+            {
+                return NotFound();
+            }
+            return View(CategoryIdFromDb);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Category obj)
+        {
+            if (ModelState.IsValid)
+            {
+                _dbContext.categories.Update(obj);
+                _dbContext.SaveChanges();
+                TempData["Success"] = "Item Updated Successfully";
+                return RedirectToAction("Index");
+            }
+            return View(obj);
+        }
+        public IActionResult Delete(int? Id)
+        {
+            if (Id == 0 || Id == null)
+            {
+                return NotFound();
+            }
+            var CategoryIdFromDb = _dbContext.categories.Find(Id);
+            if (CategoryIdFromDb == null)
+            {
+                return NotFound();
+            }
+            return View(CategoryIdFromDb);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeletePOST(int? Id)
+        {
+            var obj = _dbContext.categories.Find(Id);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
+            _dbContext.categories.Remove(obj);
+            _dbContext.SaveChanges();
+            TempData["Success"] = "Item deleted Successfully";
+            return RedirectToAction("Index");
+
+            return View(Id);
         }
     }
 }
